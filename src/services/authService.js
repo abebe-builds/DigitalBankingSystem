@@ -2,6 +2,19 @@ import bcrypt from 'bcryptjs';
 import { pool } from '../db/pool.js';
 import { config } from '../config/env.js';
 
+// Pre-computed hash used to equalize timing when the email is not found,
+// preventing timing-based email enumeration. Rounds match config.bcryptRounds (12).
+const DUMMY_HASH = '$2b$12$GCyUv9Z8gVw1Y.eVxOl5oeRzWlCdChg2XVr5AJYJVwXY8y9H3iNPm';
+
+/**
+ * Call this on the not-found path to equalize bcrypt timing and prevent
+ * timing-based email enumeration. Always returns false.
+ */
+export async function dummyVerify(plain) {
+  await bcrypt.compare(plain, DUMMY_HASH);
+  return false;
+}
+
 export async function findUserByEmail(email) {
   const [rows] = await pool.query(
     `SELECT u.id, u.email, u.password_hash, u.role_id, r.name AS role_name,

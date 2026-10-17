@@ -1,6 +1,9 @@
 import { pool } from '../db/pool.js';
 
 async function loadRolePermissions(req) {
+  if (!req.user?.role_id) {
+    return new Set();
+  }
   if (!req._rolePerms) {
     const [rows] = await pool.query(
       `SELECT p.code FROM permissions p

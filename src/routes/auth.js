@@ -4,6 +4,7 @@ import { requireAuth } from '../middleware/authenticate.js';
 import {
   findUserByEmail,
   verifyPassword,
+  dummyVerify,
   isLockedOut,
   recordFailedLogin,
   recordSuccessfulLogin,
@@ -24,7 +25,10 @@ authRouter.post('/login', loginLimiter, async (req, res, next) => {
     const user = await findUserByEmail(normalizedEmail);
     const GENERIC_ERROR = 'Invalid email or password';
     if (!user) {
-      // No enumeration: same message and timing hint
+      // Equalize timing with the known-user/wrong-password path to prevent
+      // timing-based email enumeration. dummyVerify runs bcrypt.compare against
+      // a pre-computed hash and always returns false.
+      await dummyVerify(password);
       return res.status(401).json({ status: 'error', error: GENERIC_ERROR });
     }
     if (isLockedOut(user)) {
