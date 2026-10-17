@@ -3,15 +3,23 @@ import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
+import { existsSync, mkdirSync } from 'node:fs';
 import { config } from './config/env.js';
 import { sessionMiddleware } from './config/session.js';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
 import { usersRouter } from './routes/users.js';
+import { applicationsRouter } from './routes/applications.js';
+import { otpRouter } from './routes/otp.js';
 import { notFound } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
+
+// Create upload directory at startup (Phase 3)
+if (!existsSync(config.upload.dir)) {
+  mkdirSync(config.upload.dir, { recursive: true });
+}
 
 // Default dev origins; override via CORS_ORIGIN (comma-separated) in env if needed.
 const corsOrigin = config.corsOrigin
@@ -26,10 +34,11 @@ app.use(cors({ origin: config.isProduction ? corsOrigin : true }));
 if (config.isDevelopment) {
   app.use(morgan('dev'));
 }
-// 4. Rate limit on /api (100 requests / 15 min)
+// 4. Rate limit on /api — configurable via RATE_LIMIT_MAX_API (default 500).
+// Set lower in production .env; high default prevents test exhaustion.
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: config.rateLimitMaxApi,
   standardHeaders: true,
   legacyHeaders: false,
   message: { status: 'error', error: 'Too Many Requests' },
@@ -43,6 +52,8 @@ app.use(express.json());
 app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/applications', applicationsRouter);
+app.use('/api/otp', otpRouter);
 // 8. 404 for unmatched routes
 app.use(notFound);
 // 9. Central error handler (last; no stack leaks in production)

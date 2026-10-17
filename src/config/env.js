@@ -38,6 +38,18 @@ export const config = {
   bcryptRounds: intEnv('BCRYPT_ROUNDS', 12),
   loginMaxAttempts: intEnv('LOGIN_MAX_ATTEMPTS', 5),
   loginLockMinutes: intEnv('LOGIN_LOCK_MINUTES', 15),
+  // Rate limit maximums — increase in dev/.env to avoid test exhaustion.
+  // Production defaults are conservative; set lower in production .env if desired.
+  rateLimitMaxApi: intEnv('RATE_LIMIT_MAX_API', 500),
+  rateLimitMaxLogin: intEnv('RATE_LIMIT_MAX_LOGIN', 50),
+  otp: {
+    expiryMinutes: intEnv('OTP_EXPIRY_MINUTES', 10),
+    maxAttempts: intEnv('OTP_MAX_ATTEMPTS', 3),
+  },
+  upload: {
+    dir: process.env.UPLOAD_DIR || 'uploads',
+    maxFileSizeMb: intEnv('MAX_FILE_SIZE_MB', 5),
+  },
 };
 
 // Production guard: SESSION_SECRET must be set and must not be the default placeholder.
