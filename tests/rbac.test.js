@@ -33,7 +33,7 @@ after(async () => {
   if (ids.length > 0) {
     await pool.query('DELETE FROM users WHERE id IN (?)', [ids]);
   }
-  await pool.end();
+  // Do NOT call pool.end() here — pool is shared. See tests/teardown.test.js.
 });
 
 async function loginAs(roleName) {

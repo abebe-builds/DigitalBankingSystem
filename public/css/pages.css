@@ -1,0 +1,360 @@
+/* pages.css — Login, change-password, dashboard sections, pagination */
+@import './tokens.css';
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGIN PAGE — split-screen
+═══════════════════════════════════════════════════════════════ */
+body.login-page {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-surface);
+}
+
+/* ── Left panel — animated gradient branding ─────────────────── */
+.login-left {
+  width: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-light) 60%,
+    #3a7bd5 100%
+  );
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 40px;
+}
+
+/* Decorative blurred circles */
+.login-decor {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  background: white;
+  pointer-events: none;
+}
+
+.login-decor--1 {
+  width: 400px;
+  height: 400px;
+  top: -100px;
+  right: -150px;
+}
+
+.login-decor--2 {
+  width: 250px;
+  height: 250px;
+  bottom: -80px;
+  left: -80px;
+}
+
+.login-decor--3 {
+  width: 150px;
+  height: 150px;
+  top: 50%;
+  left: 30%;
+  transform: translateY(-50%);
+}
+
+/* Branding content (above decorative circles) */
+.login-branding {
+  text-align: center;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.login-logo {
+  font-size: 72px;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.login-bank-name {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+  color: white;
+}
+
+.login-tagline {
+  font-size: var(--font-size-lg);
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+.login-feature-list {
+  margin-top: 32px;
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  display: inline-block;
+}
+
+.login-feature-list li {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-feature-list li::before {
+  content: '✓';
+  background: var(--color-accent);
+  color: var(--color-primary-dark);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Right panel — login form ────────────────────────────────── */
+.login-right {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--color-surface);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-card h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--color-text);
+}
+
+.login-subtitle {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-bottom: 28px;
+}
+
+.login-form {
+  margin-top: 0;
+}
+
+.login-form .form-group {
+  margin-bottom: 20px;
+}
+
+.login-footer-text {
+  text-align: center;
+  margin-top: 20px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Mobile: hide left panel ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .login-left {
+    display: none;
+  }
+
+  .login-right {
+    width: 100%;
+    padding: 24px;
+  }
+
+  .login-card {
+    max-width: 100%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHANGE PASSWORD PAGE
+═══════════════════════════════════════════════════════════════ */
+body.change-password-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--color-bg);
+}
+
+.change-password-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  padding: 40px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.change-password-card h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--color-text);
+}
+
+.change-password-card .policy-hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: 28px;
+  background: var(--color-bg);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-info);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD — section headings, tabs, pagination
+═══════════════════════════════════════════════════════════════ */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 28px 0 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* ── Tabs ────────────────────────────────────────────────────── */
+.tab-list {
+  display: flex;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 20px;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: var(--color-primary);
+}
+
+.tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Filter Bar ──────────────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-bar .form-control {
+  width: auto;
+  flex: 1;
+  min-width: 160px;
+  max-width: 220px;
+}
+
+/* ── Pagination ──────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pagination__btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--color-text);
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+  min-width: 36px;
+  text-align: center;
+}
+
+.pagination__btn:hover:not(.active):not(:disabled) {
+  background: var(--color-bg);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.pagination__btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.pagination__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination__info {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  padding: 0 8px;
+}
+
+/* ── Detail Panel (Application / Account detail) ────────────── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-item__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.detail-item__value {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-text);
+}

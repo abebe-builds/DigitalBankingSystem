@@ -5,9 +5,13 @@ import { config } from './env.js';
 
 const MySQLStore = MySQLStoreFactory(expressSession);
 
-const store = new MySQLStore(
+export const store = new MySQLStore(
   {
     createDatabaseTable: false,
+    // Disable the background expiration-cleanup interval.
+    // Expired sessions are cleaned on access; the interval is not needed
+    // for a dev/test environment and prevents the process from exiting cleanly.
+    clearExpired: false,
     schema: {
       tableName: 'sessions',
       columnNames: {

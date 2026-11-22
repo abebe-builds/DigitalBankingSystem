@@ -27,7 +27,8 @@ after(async () => {
   if (testUserId) {
     await pool.query('DELETE FROM users WHERE id = ?', [testUserId]);
   }
-  await pool.end();
+  // Do NOT call pool.end() here — the pool is shared across all test files
+  // in a single node --test process. Teardown is handled by tests/teardown.test.js.
 });
 
 describe('POST /api/auth/login', () => {

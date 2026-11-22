@@ -90,3 +90,48 @@ export async function changePassword(userId, currentPlain, newPlain) {
     [newHash, userId],
   );
 }
+
+/**
+ * Register a new Customer user account.
+ * Returns the created user's safe object (no password_hash).
+ * Throws 409 if the email is already in use.
+ */
+export async function registerCustomer(email, password) {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // Check email uniqueness
+  const existing = await findUserByEmail(normalizedEmail);
+  if (existing) {
+    throw Object.assign(new Error('An account with this email address already exists'), { status: 409 });
+  }
+
+  // Validate password policy
+  const policy = validatePasswordPolicy(password);
+  if (!policy.valid) {
+    const err = Object.assign(new Error('Password does not meet requirements'), { status: 400 });
+    err.errors = policy.errors;
+    throw err;
+  }
+
+  // Get Customer role id
+  const [roleRows] = await pool.query("SELECT id FROM roles WHERE name = 'Customer'");
+  if (!roleRows[0]) throw Object.assign(new Error('Customer role not found'), { status: 500 });
+  const roleId = roleRows[0].id;
+
+  const passwordHash = await hashPassword(password);
+
+  const [result] = await pool.query(
+    'INSERT INTO users (email, password_hash, role_id, status, password_changed_at) VALUES (?, ?, ?, ?, NOW())',
+    [normalizedEmail, passwordHash, roleId, 'active'],
+  );
+
+  return {
+    id: result.insertId,
+    email: normalizedEmail,
+    role_id: roleId,
+    role_name: 'Customer',
+    status: 'active',
+    must_change_password: 0,
+    last_login_at: null,
+  };
+}

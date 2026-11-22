@@ -1,0 +1,16 @@
+▶ Frontend static serving and SPA fallback
+  ✔ Test 1: GET / returns 200 + text/html + body includes DigitalBank ETB (171.9287ms)
+  ✔ Test 2: GET /dashboard.html returns 200 + body includes id="sidebar" and id="view-container" (34.243ms)
+  ✔ Test 3: GET /some/deep/path returns 200 + text/html (SPA fallback) (34.5439ms)
+  ✔ Test 4: GET /css/tokens.css returns 200 + content-type includes text/css (114.7558ms)
+  ✔ Test 5: GET /js/api.js returns 200 + content-type includes javascript (49.1084ms)
+  ✔ Test 6: GET /api/auth/me without session returns 401 + body.status === "error" (86.3369ms)
+✔ Frontend static serving and SPA fallback (500.0394ms)
+ℹ tests 6
+ℹ suites 1
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3211.4757

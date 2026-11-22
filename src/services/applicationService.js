@@ -26,20 +26,38 @@ async function generateReferenceNumber() {
  * Generate ETB-YYYYMMDD-XXXXXXXX account number. Checks DB for collision (max 5 retries).
  * @returns {Promise<string>}
  */
+/**
+ * Generate a unique 13-digit numeric account number like real Ethiopian banks.
+ * Format: 1000XXXXXXXXX where:
+ * - 1000 is the bank branch/prefix
+ * - XXXXXXXXX is a random 9-digit unique number
+ * 
+ * Examples (real Ethiopian banks):
+ * - Commercial Bank of Ethiopia: 1000123456789 (13 digits)
+ * - Awash Bank: 01234567890 (11 digits)
+ * - Bank of Abyssinia: 1001234567 (10 digits)
+ */
 async function generateAccountNumber() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const suffix = Array.from({ length: 8 }, () =>
-      chars[randomBytes(1)[0] % chars.length],
-    ).join('');
-    const num = `ETB-${today}-${suffix}`;
+  const PREFIX = '1000'; // Bank branch code (4 digits)
+  
+  for (let attempt = 0; attempt < 10; attempt++) {
+    // Generate 9 random digits to create a 13-digit number total
+    let randomDigits = '';
+    for (let i = 0; i < 9; i++) {
+      randomDigits += Math.floor(Math.random() * 10);
+    }
+    
+    const accountNumber = PREFIX + randomDigits; // e.g., "1000123456789"
+    
+    // Check uniqueness
     const [rows] = await pool.query(
       'SELECT id FROM bank_accounts WHERE account_number = ?',
-      [num],
+      [accountNumber],
     );
-    if (rows.length === 0) return num;
+    
+    if (rows.length === 0) return accountNumber;
   }
+  
   throw Object.assign(new Error('Could not generate unique account number'), { status: 500 });
 }
 
@@ -235,6 +253,34 @@ export async function requestCorrection(id, reviewerUserId, instructions) {
 }
 
 /**
+ * UNDER_REVIEW -> KYC_VERIFIED (KYC officer marks application as verified)
+ * @param {number} id
+ * @param {number} kycOfficerId
+ * @param {string|null} notes
+ * @returns {Promise<object>} updated application
+ */
+export async function verifyKyc(id, kycOfficerId, notes = null) {
+  if (!id || !kycOfficerId) {
+    throw Object.assign(new Error('id and kycOfficerId are required'), { status: 400 });
+  }
+  const app = await getApplicationById(id);
+  if (app.status !== 'UNDER_REVIEW') {
+    throw Object.assign(
+      new Error(`Cannot verify KYC on application in status ${app.status}. Must be UNDER_REVIEW.`), { status: 409 },
+    );
+  }
+  
+  // Mark as KYC verified - we'll use review_notes to store KYC verification
+  await pool.query(
+    `UPDATE account_applications
+     SET kyc_verified_by = ?, kyc_verified_at = NOW(), kyc_notes = ?
+     WHERE id = ?`,
+    [kycOfficerId, notes, id],
+  );
+  return getApplicationById(id);
+}
+
+/**
  * UNDER_REVIEW -> APPROVED (manager/approver; approver must differ from reviewer)
  * @param {number} id
  * @param {number} approverId
@@ -248,6 +294,15 @@ export async function approveApplication(id, approverId, notes = null) {
       new Error(`Cannot approve application in status ${app.status}`), { status: 409 },
     );
   }
+  
+  // Check if KYC verification is completed
+  if (!app.kyc_verified_by || !app.kyc_verified_at) {
+    throw Object.assign(
+      new Error('Cannot approve application before KYC verification. KYC officer must verify first.'), 
+      { status: 400 },
+    );
+  }
+  
   if (app.reviewed_by !== null && app.reviewed_by === approverId) {
     throw Object.assign(
       new Error('Self-approval is not permitted: approver cannot be the same as reviewer'), { status: 409 },

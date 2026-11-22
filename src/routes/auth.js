@@ -10,7 +10,9 @@ import {
   recordSuccessfulLogin,
   validatePasswordPolicy,
   changePassword,
+  registerCustomer,
 } from '../services/authService.js';
+import { createApplication, submitApplication } from '../services/applicationService.js';
 
 export const authRouter = Router();
 
@@ -95,6 +97,78 @@ authRouter.post('/change-password', requireAuth, async (req, res, next) => {
   } catch (err) {
     if (err.status) {
       return res.status(err.status).json({ status: 'error', error: err.message, ...(err.errors ? { details: err.errors } : {}) });
+    }
+    next(err);
+  }
+});
+
+// POST /api/auth/register
+// Public endpoint — creates a new Customer account + draft application in one step.
+// Rate-limited via the API-wide limiter (no separate limiter needed here).
+authRouter.post('/register', async (req, res, next) => {
+  try {
+    const {
+      email, password,
+      first_name, last_name, date_of_birth, national_id, nationality,
+      phone, address_line1, address_line2, city,
+      account_type, initial_deposit_amount, currency,
+      terms_accepted, privacy_accepted,
+    } = req.body;
+
+    // Basic presence checks
+    if (!email || !password) {
+      return res.status(400).json({ status: 'error', error: 'Email and password are required' });
+    }
+    if (!first_name || !last_name || !date_of_birth || !national_id || !phone || !address_line1 || !city) {
+      return res.status(400).json({ status: 'error', error: 'All personal information fields are required' });
+    }
+    if (!terms_accepted || !privacy_accepted) {
+      return res.status(400).json({ status: 'error', error: 'You must accept the Terms & Conditions and Privacy Policy' });
+    }
+
+    // 1. Create the Customer user account
+    const user = await registerCustomer(email, password);
+
+    // 2. Create and immediately submit a draft application for this user
+    const appData = {
+      account_type: account_type || 'SAVINGS',
+      first_name, last_name, date_of_birth, national_id,
+      nationality: nationality || 'Ethiopian',
+      phone, email: email.trim().toLowerCase(),
+      address_line1, address_line2: address_line2 || null, city,
+      initial_deposit_amount: parseFloat(initial_deposit_amount) || 0,
+      currency: currency || 'ETB',
+      terms_accepted: 1,
+      privacy_accepted: 1,
+    };
+
+    const application = await createApplication(user.id, appData);
+    const submitted = await submitApplication(application.id, user.id);
+
+    // 3. Log the new user in automatically (regenerate session)
+    await new Promise((resolve, reject) =>
+      req.session.regenerate((err) => (err ? reject(err) : resolve())),
+    );
+    req.session.user = user;
+
+    return res.status(201).json({
+      status: 'ok',
+      message: 'Account created and application submitted successfully.',
+      user,
+      application: {
+        id: submitted.id,
+        reference_number: submitted.reference_number,
+        status: submitted.status,
+        account_type: submitted.account_type,
+      },
+    });
+  } catch (err) {
+    if (err.status) {
+      return res.status(err.status).json({
+        status: 'error',
+        error: err.message,
+        ...(err.errors ? { details: err.errors } : {}),
+      });
     }
     next(err);
   }

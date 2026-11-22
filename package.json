@@ -16,7 +16,10 @@
     "migrate:status": "node src/db/migrate.js --status",
     "test": "node --test --test-force-exit tests/*.test.js",
     "check": "node scripts/check-syntax.js",
-    "seed:dev": "node scripts/seed-dev-users.js"
+    "seed:dev": "node scripts/seed-dev-users.js",
+    "backup": "node scripts/backup-db.js",
+    "restore": "node scripts/restore-db.js",
+    "deploy-check": "node scripts/deploy-check.js"
   },
   "dependencies": {
     "bcryptjs": "2.4.3",

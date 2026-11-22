@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DigitalBank ETB — Modern Banking for Ethiopia</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;color:#1a1a2e;background:#fff;line-height:1.6}
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+    ul{list-style:none}
+    :root{
+      --navy:#1a3c5e;--navy-light:#2d6a9f;--navy-dark:#0f2340;
+      --gold:#f0a500;--gold-dark:#d4920a;
+      --green:#27ae60;--danger:#e74c3c;--warning:#f39c12;
+      --bg:#f4f6f9;--white:#fff;--text:#1a1a2e;--muted:#6c757d;--border:#dee2e6;
+      --shadow:0 4px 20px rgba(0,0,0,.10);--radius:12px;--tr:.2s ease;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+    .section{padding:80px 0}
+    .section--alt{background:var(--bg)}
+    .section-label{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+    .section-title{font-size:clamp(26px,4vw,40px);font-weight:800;color:var(--navy);line-height:1.2;margin-bottom:16px}
+    .section-sub{font-size:17px;color:var(--muted);max-width:600px}
+    .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px}
+    .hidden{display:none!important}
+
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 28px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;border:2px solid transparent;transition:var(--tr);white-space:nowrap}
+    .btn--primary{background:var(--gold);color:var(--navy-dark);border-color:var(--gold)}
+    .btn--primary:hover{background:var(--gold-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(240,165,0,.4)}
+    .btn--outline{background:transparent;color:#fff;border-color:rgba(255,255,255,.6)}
+    .btn--outline:hover{background:rgba(255,255,255,.15);border-color:#fff}
+    .btn--navy{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .btn--navy:hover{background:var(--navy-light)}
+    .btn--lg{padding:16px 36px;font-size:16px}
+    .btn--sm{padding:8px 18px;font-size:13px}
+    .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    /* Navbar */
+    .navbar{position:sticky;top:0;z-index:1000;background:var(--navy);box-shadow:0 2px 16px rgba(0,0,0,.25)}
+    .navbar__inner{display:flex;align-items:center;justify-content:space-between;height:70px;max-width:1200px;margin:0 auto;padding:0 24px}
+    .navbar__logo{display:flex;align-items:center;gap:12px;color:#fff;font-weight:800;font-size:20px}
+    .navbar__logo-icon{width:40px;height:40px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--navy-dark)}
+    .navbar__logo-sub{font-size:11px;font-weight:400;opacity:.75;display:block}
+    .navbar__links{display:flex;align-items:center;gap:6px}
+    .navbar__links a{color:rgba(255,255,255,.85);font-size:14px;font-weight:500;padding:8px 14px;border-radius:6px;transition:var(--tr)}
+    .navbar__links a:hover{color:#fff;background:rgba(255,255,255,.1)}
+    .navbar__actions{display:flex;align-items:center;gap:10px}
+    .navbar__hamburger{display:none;background:none;border:none;cursor:pointer;color:#fff;font-size:24px;padding:4px}
+    .navbar__mobile-menu{display:none;flex-direction:column;background:var(--navy-dark);padding:12px 24px 20px}
+    .navbar__mobile-menu.open{display:flex}
+    .navbar__mobile-menu a{color:rgba(255,255,255,.85);padding:12px 0;font-size:15px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .navbar__mobile-menu .btn{margin-top:12px;width:100%}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 60%,#3a7bd5 100%);background-size:200% 200%;animation:gradShift 10s ease infinite;position:relative;overflow:hidden}
+    @keyframes gradShift{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+    .hero__inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1200px;margin:0 auto;padding:80px 24px}
+    .hero__content{color:#fff}
+    .hero__eyebrow{display:inline-block;background:rgba(240,165,0,.2);color:var(--gold);border:1px solid rgba(240,165,0,.4);border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+    .hero__title{font-size:clamp(32px,5vw,52px);font-weight:900;line-height:1.1;margin-bottom:20px;letter-spacing:-1px}
+    .hero__title span{color:var(--gold)}
+    .hero__sub{font-size:17px;opacity:.88;margin-bottom:36px;max-width:480px;line-height:1.7}
+    .hero__cta{display:flex;gap:14px;flex-wrap:wrap}
+    .hero__stats{display:flex;gap:32px;margin-top:48px;padding-top:32px;border-top:1px solid rgba(255,255,255,.15)}
+    .hero__stat-num{font-size:26px;font-weight:800;color:var(--gold)}
+    .hero__stat-label{font-size:12px;opacity:.7;text-transform:uppercase;letter-spacing:1px}
+    .hero__img-card{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3);position:relative}
+    .hero__img-card img{width:100%;height:320px;object-fit:cover;display:block}
+    .hero__img-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(0deg,rgba(10,28,46,.85) 0%,transparent 100%);padding:24px 20px 20px}
+    .hero__img-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--navy-dark);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700}
+    .hero__decor{position:absolute;border-radius:50%;opacity:.05;background:#fff;pointer-events:none}
+    .hero__decor--1{width:500px;height:500px;top:-150px;right:-150px}
+    .hero__decor--2{width:300px;height:300px;bottom:-100px;left:30%}
+
+    /* Quick bar */
+    .quick-bar{background:#fff;border-bottom:1px solid var(--border)}
+    .quick-bar__inner{display:flex;max-width:1200px;margin:0 auto}
+    .quick-bar__item{flex:1;display:flex;align-items:center;gap:12px;padding:20px 24px;border-right:1px solid var(--border);transition:var(--tr);cursor:pointer;color:var(--text)}
+    .quick-bar__item:last-child{border-right:none}
+    .quick-bar__item:hover{background:var(--bg)}
+    .quick-bar__icon{width:44px;height:44px;border-radius:10px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .quick-bar__item:hover .quick-bar__icon{background:var(--gold);color:var(--navy)}
+    .quick-bar__label{font-weight:700;font-size:14px}
+    .quick-bar__sub{font-size:12px;color:var(--muted)}
+
+    /* Account cards */
+    .account-card{background:#fff;border-radius:var(--radius);border:2px solid var(--border);padding:32px 28px;transition:var(--tr);position:relative;overflow:hidden}
+    .account-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gold)}
+    .account-card--checking::before{background:var(--navy-light)}
+    .account-card--fixed::before{background:var(--green)}
+    .account-card:hover{border-color:var(--navy);box-shadow:var(--shadow);transform:translateY(-4px)}
+    .account-card__icon{font-size:40px;margin-bottom:16px}
+    .account-card__title{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:8px}
+    .account-card__desc{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+    .account-card__features{margin-bottom:24px}
+    .account-card__feature{display:flex;align-items:flex-start;gap:10px;font-size:13px;padding:8px 0;border-bottom:1px solid var(--bg)}
+    .account-card__feature:last-child{border-bottom:none}
+    .feat-ok{color:var(--green);font-weight:700;margin-top:1px}
+    .feat-no{color:var(--danger);font-weight:700;margin-top:1px}
+
+    /* Service cards */
+    .service-card{background:#fff;border-radius:var(--radius);padding:28px;border:1px solid var(--border);transition:var(--tr);display:flex;gap:20px;align-items:flex-start}
+    .service-card:hover{border-color:var(--navy);box-shadow:var(--shadow);transform:translateY(-2px)}
+    .service-card__icon{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+    .service-card__title{font-size:17px;font-weight:700;margin-bottom:8px;color:var(--navy)}
+    .service-card__desc{font-size:14px;color:var(--muted);line-height:1.6}
+
+    /* Steps */
+    .steps{display:flex;gap:0;position:relative}
+    .steps::before{content:'';position:absolute;top:36px;left:60px;right:60px;height:2px;background:linear-gradient(90deg,var(--gold),var(--navy-light));z-index:0}
+    .step{flex:1;text-align:center;padding:0 16px;position:relative;z-index:1}
+    .step__num{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:4px solid #fff;box-shadow:0 4px 16px rgba(26,60,94,.3)}
+    .step:nth-child(2) .step__num{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--navy)}
+    .step:nth-child(3) .step__num{background:linear-gradient(135deg,#6c5ce7,#a29bfe)}
+    .step:nth-child(5) .step__num{background:linear-gradient(135deg,var(--green),#55d98d)}
+    .step__title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--navy)}
+    .step__desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+    /* Security */
+    .security-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+    .sec-item{display:flex;gap:16px;align-items:flex-start;margin-bottom:28px}
+    .sec-item__icon{width:48px;height:48px;border-radius:12px;background:rgba(26,60,94,.08);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .sec-item__title{font-size:16px;font-weight:700;margin-bottom:4px}
+    .sec-item__desc{font-size:13px;color:var(--muted);line-height:1.6}
+    .sec-visual{background:linear-gradient(135deg,var(--navy),var(--navy-light));border-radius:20px;padding:40px;color:#fff;text-align:center}
+    .sec-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:100px;padding:8px 16px;font-size:13px;margin:6px 4px}
+
+    /* FAQ */
+    .faq-item{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+    .faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;padding:20px 24px;background:#fff;border:none;cursor:pointer;font-size:15px;font-weight:600;text-align:left;gap:16px;transition:var(--tr);color:var(--text)}
+    .faq-q:hover{background:var(--bg)}
+    .faq-chev{transition:transform .25s ease;font-size:18px;color:var(--navy);flex-shrink:0}
+    .faq-item.open .faq-chev{transform:rotate(180deg)}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;padding:0 24px;font-size:14px;color:var(--muted);line-height:1.8;background:var(--bg)}
+    .faq-item.open .faq-a{max-height:300px;padding:16px 24px 20px}
+
+    /* CTA banner */
+    .cta-banner{background:linear-gradient(135deg,var(--navy-dark),var(--navy),var(--navy-light));color:#fff;text-align:center;padding:80px 24px;position:relative;overflow:hidden}
+    .cta-banner::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(240,165,0,.08)}
+    .cta-banner__title{font-size:clamp(28px,4vw,44px);font-weight:900;margin-bottom:16px}
+    .cta-banner__sub{font-size:17px;opacity:.85;max-width:560px;margin:0 auto 36px}
+    .cta-banner__btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+    /* Contact */
+    .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
+    .contact-card{background:#fff;border-radius:var(--radius);padding:28px 20px;text-align:center;border:1px solid var(--border)}
+    .contact-card__icon{font-size:36px;margin-bottom:12px}
+    .contact-card__title{font-weight:700;font-size:15px;margin-bottom:6px;color:var(--navy)}
+    .contact-card__info{font-size:14px;color:var(--muted)}
+
+    /* Footer */
+    .footer{background:var(--navy-dark);color:rgba(255,255,255,.8);padding:56px 0 24px}
+    .footer__grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;max-width:1200px;margin:0 auto;padding:0 24px}
+    .footer__brand{font-size:20px;font-weight:800;color:#fff;margin-bottom:12px}
+    .footer__desc{font-size:14px;line-height:1.7;margin-bottom:20px}
+    .footer__disclaimer{font-size:11px;background:rgba(255,255,255,.06);border-left:3px solid var(--gold);padding:10px 14px;border-radius:4px;line-height:1.6}
+    .footer__col-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;margin-bottom:16px}
+    .footer__links{display:flex;flex-direction:column;gap:10px}
+    .footer__links a{font-size:14px;transition:color .2s}
+    .footer__links a:hover{color:var(--gold)}
+    .footer__bottom{border-top:1px solid rgba(255,255,255,.1);margin-top:40px;padding-top:20px;max-width:1200px;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;display:flex;justify-content:space-between;align-items:center;font-size:13px;flex-wrap:wrap;gap:10px}
+    .footer__bottom-links{display:flex;gap:20px}
+    .footer__bottom-links a{color:rgba(255,255,255,.6)}
+    .footer__bottom-links a:hover{color:var(--gold)}
+
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+    .modal-overlay.open{opacity:1;pointer-events:all}
+    .modal{background:#fff;border-radius:16px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .25s;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+    .modal-overlay.open .modal{transform:scale(1)}
+    .modal__head{display:flex;justify-content:space-between;align-items:flex-start;padding:24px 28px 16px;position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);z-index:1}
+    .modal__title{font-size:20px;font-weight:800;color:var(--navy)}
+    .modal__step-lbl{font-size:12px;color:var(--muted);margin-top:3px}
+    .modal__close{background:none;border:none;cursor:pointer;font-size:22px;color:var(--muted);padding:4px;border-radius:6px;transition:background .15s;flex-shrink:0}
+    .modal__close:hover{background:var(--bg)}
+    .modal__body{padding:24px 28px 28px}
+    .form-group{margin-bottom:18px}
+    .form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--navy)}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;transition:border-color .15s;background:#fff}
+    .form-group input:focus,.form-group select:focus{outline:none;border-color:var(--navy)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .alert{padding:12px 16px;border-radius:8px;font-size:14px;margin-bottom:16px}
+    .alert--error{background:#fdf2f2;color:var(--danger);border-left:4px solid var(--danger)}
+    .alert--success{background:#f0fdf4;color:var(--green);border-left:4px solid var(--green)}
+    .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Responsive */
+    @media(max-width:900px){
+      .hero__inner{grid-template-columns:1fr;gap:40px}
+      .hero__img-card{display:none}
+      .steps::before{display:none}
+      .steps{flex-direction:column;gap:20px}
+      .step{text-align:left;display:flex;gap:20px;align-items:flex-start}
+      .step__num{margin:0;flex-shrink:0;width:52px;height:52px;font-size:18px}
+      .security-grid{grid-template-columns:1fr}
+      .sec-visual{display:none}
+      .footer__grid{grid-template-columns:1fr 1fr}
+      .quick-bar__inner{flex-wrap:wrap}
+      .quick-bar__item{flex:1 1 50%}
+    }
+    @media(max-width:600px){
+      .navbar__links{display:none}
+      .navbar__actions .btn--outline{display:none}
+      .navbar__hamburger{display:block}
+      .footer__grid{grid-template-columns:1fr}
+      .quick-bar__item{flex:1 1 100%}
+      .form-row{grid-template-columns:1fr}
+      .section{padding:56px 0}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="navbar__inner">
+    <a href="/" class="navbar__logo">
+      <div class="navbar__logo-icon">🏦</div>
+      <div>DigitalBank ETB<span class="navbar__logo-sub">Modern Banking for Ethiopia</span></div>
+    </a>
+    <div class="navbar__links">
+      <a href="#services">Services</a>
+      <a href="#accounts">Account Types</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#security">Security</a>
+      <a href="#faq">Help & FAQ</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="navbar__actions">
+      <button class="btn btn--primary btn--sm" onclick="openModal()">Open an Account</button>
+      <a href="/login.html" class="btn btn--outline btn--sm">Sign In</a>
+    </div>
+    <button class="navbar__hamburger" id="hamburger">☰</button>
+  </div>
+  <div class="navbar__mobile-menu" id="mobile-menu">
+    <a href="#services">Services</a>
+    <a href="#accounts">Account Types</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#security">Security</a>
+    <a href="#faq">Help & FAQ</a>
+    <a href="#contact">Contact</a>
+    <button class="btn btn--primary" onclick="openModal();document.getElementById('mobile-menu').classList.remove('open')">Open an Account</button>
+    <a href="/login.html" class="btn btn--navy" style="margin-top:8px">Sign In →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero__decor hero__decor--1"></div>
+  <div class="hero__decor hero__decor--2"></div>
+  <div class="hero__inner">
+    <div class="hero__content">
+      <div class="hero__eyebrow">🇪🇹 Proudly Ethiopian</div>
+      <h1 class="hero__title">Banking made<br><span>simpler.</span></h1>
+      <p class="hero__sub">Manage your money, apply for an account online, and access full digital banking services — fast, secure, and built for Ethiopia.</p>
+      <div class="hero__cta">
+        <button class="btn btn--primary btn--lg" onclick="openModal()">Open an Account →</button>
+        <a href="/login.html" class="btn btn--outline btn--lg">Sign In</a>
+      </div>
+      <div class="hero__stats">
+        <div><div class="hero__stat-num">9</div><div class="hero__stat-label">User Roles</div></div>
+        <div><div class="hero__stat-num">ETB</div><div class="hero__stat-label">Currency</div></div>
+        <div><div class="hero__stat-num">256-bit</div><div class="hero__stat-label">Encryption</div></div>
+        <div><div class="hero__stat-num">24/7</div><div class="hero__stat-label">Digital Access</div></div>
+      </div>
+    </div>
+    <div class="hero__img-card">
+      <img src="/assets/addis-hero.jpg"
+        onerror="this.parentElement.innerHTML='<div style=\'height:320px;display:flex;align-items:center;justify-content:center;font-size:80px;opacity:.3\'>🏙️</div><div class=\'hero__img-overlay\'><div class=\'hero__img-badge\'>📍 Addis Ababa, Ethiopia</div></div>'"
+        alt="Addis Ababa" />
+      <div class="hero__img-overlay"><div class="hero__img-badge">📍 Addis Ababa, Ethiopia</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK BAR -->
+<div class="quick-bar">
+  <div class="quick-bar__inner">
+    <a href="#accounts" class="quick-bar__item"><div class="quick-bar__icon">💳</div><div><div class="quick-bar__label">Open an Account</div><div class="quick-bar__sub">Start your application online</div></div></a>
+    <a href="#services" class="quick-bar__item"><div class="quick-bar__icon">🔄</div><div><div class="quick-bar__label">Money Transfers</div><div class="quick-bar__sub">Fast internal transfers</div></div></a>
+    <a href="#services" class="quick-bar__item"><div class="quick-bar__icon">📱</div><div><div class="quick-bar__label">Mobile Banking</div><div class="quick-bar__sub">Access your account anywhere</div></div></a>
+    <a href="#security" class="quick-bar__item"><div class="quick-bar__icon">🛡️</div><div><div class="quick-bar__label">Security</div><div class="quick-bar__sub">How we protect your account</div></div></a>
+  </div>
+</div>
+
+<!-- ACCOUNT TYPES -->
+<section class="section" id="accounts">
+  <div class="container">
+    <div class="section-label">Account Types</div>
+    <h2 class="section-title">Choose the account that fits you</h2>
+    <p class="section-sub" style="margin-bottom:48px">Whether you're saving for the future, managing daily expenses, or growing a fixed investment — we have the right account for you.</p>
+    <div class="grid-3">
+      <div class="account-card">
+        <div class="account-card__icon">🏦</div>
+        <div class="account-card__title">Savings Account</div>
+        <div class="account-card__desc">Ideal for building savings over time with flexible access and daily transaction limits.</div>
+        <ul class="account-card__features">
+          <li class="account-card__feature"><span class="feat-ok">✔</span> No minimum balance</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Daily withdrawal: ETB 50,000</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Single transaction: ETB 20,000</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Internal transfers supported</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Full transaction history</li>
+        </ul>
+        <button class="btn btn--primary" style="width:100%" onclick="openModal('SAVINGS')">Open Savings Account</button>
+      </div>
+      <div class="account-card account-card--checking">
+        <div class="account-card__icon">💼</div>
+        <div class="account-card__title">Checking Account</div>
+        <div class="account-card__desc">Higher limits for individuals and businesses who need flexible, high-volume access to funds.</div>
+        <ul class="account-card__features">
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Daily withdrawal: ETB 100,000</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Single transaction: ETB 50,000</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Daily transfer: ETB 80,000</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Teller deposit & withdrawal</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Full transaction history</li>
+        </ul>
+        <button class="btn btn--navy" style="width:100%" onclick="openModal('CHECKING')">Open Checking Account</button>
+      </div>
+      <div class="account-card account-card--fixed">
+        <div class="account-card__icon">📈</div>
+        <div class="account-card__title">Fixed Deposit</div>
+        <div class="account-card__desc">Lock in your savings for a fixed term and earn higher returns. Ideal for long-term goals.</div>
+        <ul class="account-card__features">
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Fixed term investment</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Competitive returns</li>
+          <li class="account-card__feature"><span class="feat-ok">✔</span> Deposit accepted via teller</li>
+          <li class="account-card__feature"><span class="feat-no">✗</span> Withdrawals not permitted</li>
+          <li class="account-card__feature"><span class="feat-no">✗</span> Transfers blocked until maturity</li>
+        </ul>
+        <button class="btn btn--sm" style="width:100%;background:var(--green);color:#fff;border:none;padding:13px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer" onclick="openModal('FIXED_DEPOSIT')">Open Fixed Deposit</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section section--alt" id="services">
+  <div class="container">
+    <div class="section-label">Banking Services</div>
+    <h2 class="section-title">Everything you need to bank</h2>
+    <p class="section-sub" style="margin-bottom:48px">Comprehensive digital banking services — all accessible from your secure online account.</p>
+    <div class="grid-3">
+      <div class="service-card"><div class="service-card__icon">🔄</div><div><div class="service-card__title">Internal Transfers</div><div class="service-card__desc">Transfer money between accounts instantly. Double-entry accounting ensures every transaction is balanced and traceable.</div></div></div>
+      <div class="service-card"><div class="service-card__icon">💰</div><div><div class="service-card__title">Deposits & Withdrawals</div><div class="service-card__desc">Teller-assisted cash deposits and withdrawals with configurable daily limits and real-time balance updates.</div></div></div>
+      <div class="service-card"><div class="service-card__icon">📊</div><div><div class="service-card__title">Transaction History</div><div class="service-card__desc">Complete transaction history with detailed ledger entries, reference numbers, and timestamps.</div></div></div>
+      <div class="service-card"><div class="service-card__icon">📱</div><div><div class="service-card__title">Mobile Banking</div><div class="service-card__desc">Fully responsive interface works on all devices. Access accounts, make transfers, and check balances from anywhere.</div></div></div>
+      <div class="service-card"><div class="service-card__icon">🔔</div><div><div class="service-card__title">OTP Verification</div><div class="service-card__desc">Secure your account with one-time passwords for phone and email verification. Each OTP expires in 10 minutes.</div></div></div>
+      <div class="service-card"><div class="service-card__icon">🔁</div><div><div class="service-card__title">Transaction Reversals</div><div class="service-card__desc">Authorized staff can reverse posted transactions. All reversals are fully audited — no data is ever deleted.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-label">Account Opening Process</div>
+    <h2 class="section-title">How to open an account</h2>
+    <p class="section-sub" style="margin-bottom:56px">A KYC-compliant, multi-step process designed to verify your identity and protect everyone.</p>
+    <div class="steps">
+      <div class="step"><div class="step__num">1</div><div><div class="step__title">Apply Online</div><div class="step__desc">Fill in your personal details, choose your account type, and upload your identity documents.</div></div></div>
+      <div class="step"><div class="step__num">2</div><div><div class="step__title">Submit Documents</div><div class="step__desc">Upload National ID, Passport, or Driver's License for identity verification.</div></div></div>
+      <div class="step"><div class="step__num">3</div><div><div class="step__title">Review & KYC</div><div class="step__desc">Our Account Opening team reviews and KYC Officers verify your identity documents.</div></div></div>
+      <div class="step"><div class="step__num">4</div><div><div class="step__title">Approval</div><div class="step__desc">An authorized Manager approves your application. Self-approval is blocked by design.</div></div></div>
+      <div class="step"><div class="step__num">5</div><div><div class="step__title">Account Activated</div><div class="step__desc">Your unique ETB account number is generated and your account is activated. Start banking immediately.</div></div></div>
+    </div>
+    <div style="text-align:center;margin-top:48px">
+      <button class="btn btn--primary btn--lg" onclick="openModal()">Start Your Application →</button>
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section class="section section--alt" id="security">
+  <div class="container">
+    <div class="security-grid">
+      <div>
+        <div class="section-label">Security & Privacy</div>
+        <h2 class="section-title">Your security is our priority</h2>
+        <p style="color:var(--muted);margin-bottom:32px">Multiple layers of protection keep your account and money safe.</p>
+        <div class="sec-item"><div class="sec-item__icon">🔐</div><div><div class="sec-item__title">Password Protection</div><div class="sec-item__desc">Passwords are hashed with bcrypt (12 rounds). Never stored in plain text, never visible to staff.</div></div></div>
+        <div class="sec-item"><div class="sec-item__icon">🔒</div><div><div class="sec-item__title">Session Security</div><div class="sec-item__desc">Sessions stored server-side. Cookies are HttpOnly and SameSite=Lax to prevent XSS and CSRF attacks.</div></div></div>
+        <div class="sec-item"><div class="sec-item__icon">📱</div><div><div class="sec-item__title">OTP Verification</div><div class="sec-item__desc">One-time passwords expire in 10 minutes, single-use, bcrypt-hashed. After 3 fails the OTP is locked.</div></div></div>
+        <div class="sec-item"><div class="sec-item__icon">🛡️</div><div><div class="sec-item__title">Account Lockout</div><div class="sec-item__desc">After 5 failed login attempts your account locks for 15 minutes to prevent brute-force attacks.</div></div></div>
+        <div class="sec-item"><div class="sec-item__icon">🔑</div><div><div class="sec-item__title">Role-Based Access Control</div><div class="sec-item__desc">28 granular permissions across 9 roles. System Admins cannot move money. Approval requires a different officer.</div></div></div>
+      </div>
+      <div class="sec-visual">
+        <div style="font-size:80px;margin-bottom:20px">🛡️</div>
+        <div style="font-size:22px;font-weight:800;margin-bottom:12px">Bank-Grade Security</div>
+        <div style="opacity:.8;font-size:14px;margin-bottom:24px;line-height:1.7">Multiple protection layers secure your account and personal information.</div>
+        <div>
+          <span class="sec-badge">🔐 bcrypt Passwords</span>
+          <span class="sec-badge">🔒 HttpOnly Cookies</span>
+          <span class="sec-badge">📱 OTP</span>
+          <span class="sec-badge">🛡️ Rate Limiting</span>
+          <span class="sec-badge">✅ Parameterized SQL</span>
+          <span class="sec-badge">🔑 RBAC</span>
+          <span class="sec-badge">📋 Audit Log</span>
+          <span class="sec-badge">🔄 Double-Entry Ledger</span>
+        </div>
+        <div style="margin-top:24px;font-size:12px;opacity:.7;line-height:1.7">⚠️ Educational simulation only.<br>Not a licensed financial institution.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-label">Help & Support</div>
+    <h2 class="section-title">Frequently asked questions</h2>
+    <div style="max-width:760px;margin:40px auto 0">
+      <div class="faq-item"><button class="faq-q">How do I open an account? <span class="faq-chev">▾</span></button><div class="faq-a">Click "Open an Account" on this page. Fill in your personal information, choose your account type, and create a password. Your application will be reviewed within 1–3 business days.</div></div>
+      <div class="faq-item"><button class="faq-q">What documents do I need? <span class="faq-chev">▾</span></button><div class="faq-a">You need a valid government-issued ID (National ID card, Passport, or Driver's License) and a recent proof of address. You may also need a selfie for identity verification.</div></div>
+      <div class="faq-item"><button class="faq-q">How long does approval take? <span class="faq-chev">▾</span></button><div class="faq-a">Applications are typically reviewed within 1–3 business days. You'll see your status updated in your dashboard at each step.</div></div>
+      <div class="faq-item"><button class="faq-q">What are the daily withdrawal limits? <span class="faq-chev">▾</span></button><div class="faq-a">Savings accounts: ETB 50,000/day. Checking accounts: ETB 100,000/day. Fixed Deposit accounts do not allow withdrawals during the fixed term.</div></div>
+      <div class="faq-item"><button class="faq-q">How are transfers processed? <span class="faq-chev">▾</span></button><div class="faq-a">All transfers use a double-entry accounting system — every transaction creates both a debit and credit entry ensuring balance accuracy. Transfers are processed instantly.</div></div>
+      <div class="faq-item"><button class="faq-q">What if I enter the wrong password too many times? <span class="faq-chev">▾</span></button><div class="faq-a">After 5 failed login attempts your account is temporarily locked for 15 minutes. Contact support if you believe your account is compromised.</div></div>
+      <div class="faq-item"><button class="faq-q">Is this a real bank? <span class="faq-chev">▾</span></button><div class="faq-a">No. DigitalBank ETB is an educational simulation built as a software engineering graduation project. It demonstrates real banking architecture but does not process real money.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section section--alt" id="contact">
+  <div class="container">
+    <div class="section-label">Contact & Support</div>
+    <h2 class="section-title">We're here to help</h2>
+    <div class="contact-grid" style="margin-top:40px">
+      <div class="contact-card"><div class="contact-card__icon">📧</div><div class="contact-card__title">Email Support</div><div class="contact-card__info">support@digitalbank.et<br><span style="font-size:12px;color:#aaa">Response within 24 hours</span></div></div>
+      <div class="contact-card"><div class="contact-card__icon">📞</div><div class="contact-card__title">Phone Support</div><div class="contact-card__info">+251 11 123 4567<br><span style="font-size:12px;color:#aaa">Mon–Fri, 8AM – 5PM</span></div></div>
+      <div class="contact-card"><div class="contact-card__icon">📍</div><div class="contact-card__title">Branch Location</div><div class="contact-card__info">Bole Road, Addis Ababa<br><span style="font-size:12px;color:#aaa">Main Branch</span></div></div>
+      <div class="contact-card"><div class="contact-card__icon">💬</div><div class="contact-card__title">Online Support</div><div class="contact-card__info">Sign in to your account<br><span style="font-size:12px;color:#aaa">Chat with our agents</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner">
+  <div style="position:relative;z-index:1">
+    <div class="cta-banner__title">Ready to get started?</div>
+    <p class="cta-banner__sub">Open your DigitalBank ETB account today and experience modern, secure banking built for Ethiopia.</p>
+    <div class="cta-banner__btns">
+      <button class="btn btn--primary btn--lg" onclick="openModal()">Open an Account →</button>
+      <a href="/login.html" class="btn btn--outline btn--lg">Sign In to Existing Account</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer__grid">
+    <div>
+      <div class="footer__brand">🏦 DigitalBank ETB</div>
+      <p class="footer__desc">Modern digital banking built for Ethiopia. Secure, transparent, and accessible.</p>
+      <div class="footer__disclaimer">⚠️ <strong>Educational Simulation.</strong> Not a licensed financial institution. No real money is held or processed. For educational purposes only.</div>
+    </div>
+    <div>
+      <div class="footer__col-title">Services</div>
+      <ul class="footer__links">
+        <li><a href="#accounts">Savings Account</a></li>
+        <li><a href="#accounts">Checking Account</a></li>
+        <li><a href="#accounts">Fixed Deposit</a></li>
+        <li><a href="#services">Transfers</a></li>
+        <li><a href="#services">Mobile Banking</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer__col-title">Company</div>
+      <ul class="footer__links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="/login.html">Sign In</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer__col-title">Legal</div>
+      <ul class="footer__links">
+        <li><a href="#">Terms & Conditions</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Security Policy</a></li>
+        <li><a href="#">Disclaimer</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <span>© 2026 DigitalBank ETB. Educational Simulation.</span>
+    <div class="footer__bottom-links">
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Security</a><a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal__head">
+      <div>
+        <div class="modal__title">🏦 Open an Account</div>
+        <div class="modal__step-lbl" id="modal-step-lbl">Step 1 of 3 — Personal Information</div>
+      </div>
+      <button class="modal__close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="display:flex;gap:4px;padding:12px 28px 0">
+      <div id="p1" style="flex:1;height:4px;background:var(--gold);border-radius:4px;transition:background .3s"></div>
+      <div id="p2" style="flex:1;height:4px;background:var(--border);border-radius:4px;transition:background .3s"></div>
+      <div id="p3" style="flex:1;height:4px;background:var(--border);border-radius:4px;transition:background .3s"></div>
+    </div>
+
+    <div class="modal__body">
+      <div id="modal-error" class="alert alert--error hidden"></div>
+
+      <!-- Step 1: Personal Info -->
+      <div id="s1">
+        <div class="form-row">
+          <div class="form-group"><label>First Name *</label><input id="a-fn" placeholder="Abebe" autocomplete="given-name"/></div>
+          <div class="form-group"><label>Last Name *</label><input id="a-ln" placeholder="Kebede" autocomplete="family-name"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Date of Birth *</label><input type="date" id="a-dob"/></div>
+          <div class="form-group"><label>National ID / Passport *</label><input id="a-nid" placeholder="ET-1234567890"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email Address *</label><input type="email" id="a-email" placeholder="abebe@example.com" autocomplete="email"/></div>
+          <div class="form-group"><label>Phone Number *</label><input id="a-phone" placeholder="+251911000000"/></div>
+        </div>
+        <div class="form-group"><label>Address *</label><input id="a-addr" placeholder="Bole Road, Addis Ababa"/></div>
+        <div class="form-row">
+          <div class="form-group"><label>City *</label><input id="a-city" placeholder="Addis Ababa"/></div>
+          <div class="form-group"><label>Nationality</label><input id="a-nat" value="Ethiopian"/></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="btn btn--primary" onclick="goStep(2)" style="min-width:130px">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Account & Signature -->
+      <div id="s2" class="hidden">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Account Type *</label>
+            <select id="a-type">
+              <option value="SAVINGS">💰 Savings Account</option>
+              <option value="CHECKING">💼 Checking Account</option>
+              <option value="FIXED_DEPOSIT">📈 Fixed Deposit</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Initial Deposit (ETB)</label><input type="number" id="a-dep" placeholder="500.00" min="0" step="0.01"/></div>
+        </div>
+        <div class="form-group">
+          <label>Signature * <span style="font-weight:400;font-size:12px;color:var(--muted)">— draw below</span></label>
+          <div style="border:2px solid var(--border);border-radius:8px;background:#fafafa;position:relative">
+            <canvas id="sig-pad" width="500" height="120" style="display:block;width:100%;height:120px;cursor:crosshair;touch-action:none;border-radius:6px"></canvas>
+            <button type="button" onclick="clearSig()" style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Clear</button>
+          </div>
+          <span id="sig-err" style="font-size:12px;color:var(--danger);display:none">Please provide your signature.</span>
+        </div>
+        <div class="form-group" style="display:flex;gap:10px;align-items:flex-start">
+          <input type="checkbox" id="a-terms" style="width:auto;margin-top:3px;flex-shrink:0"/>
+          <label for="a-terms" style="font-weight:400;font-size:13px;cursor:pointer">I agree to the <a href="#" style="color:var(--navy-light)">Terms & Conditions</a> and <a href="#" style="color:var(--navy-light)">Privacy Policy</a>. I confirm all information is accurate.</label>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button class="btn btn--navy" onclick="goStep(1)" style="min-width:80px">← Back</button>
+          <button class="btn btn--primary" onclick="goStep(3)" style="flex:1">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Password -->
+      <div id="s3" class="hidden">
+        <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Create a password to secure your online banking account. Use your email and this password to sign in.</p>
+        <div class="form-group">
+          <label>Password *</label>
+          <div style="position:relative">
+            <input type="password" id="a-pw" placeholder="Min. 12 characters" autocomplete="new-password" style="padding-right:44px"/>
+            <button type="button" id="pw-eye" onclick="toggleEye()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px">👁</button>
+          </div>
+          <div id="pw-str" style="margin-top:6px;font-size:12px"></div>
+        </div>
+        <div class="form-group"><label>Confirm Password *</label><input type="password" id="a-pw2" placeholder="Re-enter password" autocomplete="new-password"/></div>
+        <div style="background:var(--bg);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.8">
+          Must have: ✔ 12+ chars &nbsp; ✔ Uppercase &nbsp; ✔ Lowercase &nbsp; ✔ Number &nbsp; ✔ Special char
+        </div>
+        <div style="display:flex;gap:12px">
+          <button class="btn btn--navy" onclick="goStep(2)" style="min-width:80px">← Back</button>
+          <button id="sub-btn" class="btn btn--primary" onclick="submitReg()" style="flex:1"><span id="sub-txt">Submit Application</span></button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px">Already have an account? <a href="/login.html" style="color:var(--navy-light);font-weight:600">Sign in →</a></p>
+      </div>
+
+      <!-- Done -->
+      <div id="s-done" class="hidden" style="text-align:center;padding:20px 0">
+        <div style="font-size:64px;margin-bottom:16px">✅</div>
+        <h3 style="font-size:22px;font-weight:800;color:var(--navy);margin-bottom:12px">Application Submitted!</h3>
+        <p id="done-ref" style="font-size:15px;color:var(--muted);margin-bottom:8px"></p>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.7">Our team will review your application within 1–3 business days. You are now logged in — go to your dashboard to track the status.</p>
+        <a href="/dashboard.html" class="btn btn--primary btn--lg" style="display:inline-flex">Go to My Dashboard →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Hamburger ────────────────────────────────────────────────
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  });
+
+  // ── FAQ ──────────────────────────────────────────────────────
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!open) item.classList.add('open');
+    });
+  });
+
+  // ── Smooth scroll (non-modal links only) ─────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const hash = a.getAttribute('href').slice(1);
+      const el = hash ? document.getElementById(hash) : null;
+      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+
+  // ── Navbar scroll effect ──────────────────────────────────────
+  window.addEventListener('scroll', () => {
+    document.querySelector('.navbar').style.boxShadow =
+      window.scrollY > 20 ? '0 4px 24px rgba(0,0,0,.35)' : '0 2px 16px rgba(0,0,0,.25)';
+  });
+
+  // ── Fade-in ───────────────────────────────────────────────────
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.account-card,.service-card,.step,.sec-item,.contact-card').forEach(el => {
+    el.style.opacity='0'; el.style.transform='translateY(20px)'; el.style.transition='opacity .5s ease,transform .5s ease';
+    obs.observe(el);
+  });
+
+  // ── Modal ─────────────────────────────────────────────────────
+  function openModal(type) {
+    document.getElementById('modal-error').classList.add('hidden');
+    if (type) document.getElementById('a-type').value = type;
+    document.getElementById('modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    showStep(1);
+    setTimeout(() => document.getElementById('a-fn').focus(), 150);
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('modal-error').classList.add('hidden');
+  }
+
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  function showStep(n) {
+    ['s1','s2','s3','s-done'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    if (n !== 'done') { document.getElementById('s'+n).classList.remove('hidden'); } else { document.getElementById('s-done').classList.remove('hidden'); }
+    const lbls = ['','Step 1 of 3 — Personal Information','Step 2 of 3 — Account & Signature','Step 3 of 3 — Create Password','Application Complete'];
+    document.getElementById('modal-step-lbl').textContent = n === 'done' ? 'Application Complete' : lbls[n];
+    const c = ['var(--border)','var(--border)','var(--border)'];
+    if (n !== 'done') { for (let i=0;i<n;i++) c[i]='var(--gold)'; } else { c[0]=c[1]=c[2]='var(--green)'; }
+    ['p1','p2','p3'].forEach((id,i) => document.getElementById(id).style.background = c[i]);
+  }
+
+  function goStep(n) {
+    const errEl = document.getElementById('modal-error');
+    errEl.classList.add('hidden');
+    if (n === 2) {
+      const missing = [];
+      if (!document.getElementById('a-fn').value.trim()) missing.push('First Name');
+      if (!document.getElementById('a-ln').value.trim()) missing.push('Last Name');
+      const em = document.getElementById('a-email').value.trim();
+      if (!em || !em.includes('@')) missing.push('Valid Email');
+      if (!document.getElementById('a-phone').value.trim()) missing.push('Phone');
+      if (!document.getElementById('a-dob').value) missing.push('Date of Birth');
+      if (!document.getElementById('a-nid').value.trim()) missing.push('National ID');
+      if (!document.getElementById('a-addr').value.trim()) missing.push('Address');
+      if (!document.getElementById('a-city').value.trim()) missing.push('City');
+      if (missing.length) { errEl.textContent='Please complete: '+missing.join(', '); errEl.classList.remove('hidden'); return; }
+    }
+    if (n === 3) {
+      if (!document.getElementById('a-terms').checked) { errEl.textContent='You must accept the Terms & Conditions.'; errEl.classList.remove('hidden'); return; }
+      if (!sigHasContent) { document.getElementById('sig-err').style.display='block'; return; }
+      document.getElementById('sig-err').style.display='none';
+    }
+    showStep(n);
+  }
+
+  // ── Signature pad ─────────────────────────────────────────────
+  const canvas = document.getElementById('sig-pad');
+  const ctx = canvas.getContext('2d');
+  let drawing = false, sigHasContent = false;
+  function pos(e) { const r=canvas.getBoundingClientRect(),sx=canvas.width/r.width,sy=canvas.height/r.height,s=e.touches?e.touches[0]:e; return {x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy}; }
+  canvas.addEventListener('mousedown',  e=>{e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)});
+  canvas.addEventListener('mousemove',  e=>{e.preventDefault();if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.strokeStyle='#1a3c5e';ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();sigHasContent=true});
+  canvas.addEventListener('mouseup',    e=>{e.preventDefault();drawing=false});
+  canvas.addEventListener('mouseleave', e=>{e.preventDefault();drawing=false});
+  canvas.addEventListener('touchstart', e=>{e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)},{passive:false});
+  canvas.addEventListener('touchmove',  e=>{e.preventDefault();if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.strokeStyle='#1a3c5e';ctx.lineWidth=2;ctx.lineCap='round';ctx.stroke();sigHasContent=true},{passive:false});
+  canvas.addEventListener('touchend',   e=>{e.preventDefault();drawing=false},{passive:false});
+  function clearSig() { ctx.clearRect(0,0,canvas.width,canvas.height); sigHasContent=false; }
+
+  // ── Password strength ─────────────────────────────────────────
+  document.getElementById('a-pw').addEventListener('input', function() {
+    const v=this.value,ch=[v.length>=12,/[A-Z]/.test(v),/[a-z]/.test(v),/[0-9]/.test(v),/[^A-Za-z0-9]/.test(v)];
+    const s=ch.filter(Boolean).length,lbls=['','Very Weak','Weak','Fair','Good','Strong'],cols=['','#e74c3c','#e74c3c','#f39c12','#27ae60','#27ae60'];
+    const el=document.getElementById('pw-str');
+    el.textContent=v.length>0?'Strength: '+lbls[s]:'';el.style.color=cols[s]||'';
+  });
+  function toggleEye() {
+    const i=document.getElementById('a-pw'),b=document.getElementById('pw-eye');
+    i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'👁':'🙈';
+  }
+
+  // ── Submit registration ───────────────────────────────────────
+  async function submitReg() {
+    const errEl=document.getElementById('modal-error');
+    errEl.classList.add('hidden');
+    const pw=document.getElementById('a-pw').value, pw2=document.getElementById('a-pw2').value;
+    const btn=document.getElementById('sub-btn'), txt=document.getElementById('sub-txt');
+    if (!pw) { errEl.textContent='Please enter a password.'; errEl.classList.remove('hidden'); return; }
+    if (pw.length<12) { errEl.textContent='Password must be at least 12 characters.'; errEl.classList.remove('hidden'); return; }
+    if (pw!==pw2) { errEl.textContent='Passwords do not match.'; errEl.classList.remove('hidden'); return; }
+    btn.disabled=true; txt.innerHTML='<span class="spinner"></span> Submitting…';
+    try {
+      const res = await fetch('/api/auth/register', {
+        method:'POST', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          email:    document.getElementById('a-email').value.trim(),
+          password: pw,
+          first_name:  document.getElementById('a-fn').value.trim(),
+          last_name:   document.getElementById('a-ln').value.trim(),
+          date_of_birth: document.getElementById('a-dob').value,
+          national_id: document.getElementById('a-nid').value.trim(),
+          nationality: document.getElementById('a-nat').value.trim()||'Ethiopian',
+          phone:       document.getElementById('a-phone').value.trim(),
+          address_line1: document.getElementById('a-addr').value.trim(),
+          city:        document.getElementById('a-city').value.trim(),
+          account_type: document.getElementById('a-type').value,
+          initial_deposit_amount: parseFloat(document.getElementById('a-dep').value)||0,
+          currency:'ETB', terms_accepted:1, privacy_accepted:1,
+        }),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        document.getElementById('done-ref').textContent =
+          'Reference Number: ' + (json.application?.reference_number || '—');
+        showStep('done');
+      } else {
+        const details = json.details ? ' — ' + json.details.join(', ') : '';
+        errEl.textContent = (json.error || 'Submission failed.') + details;
+        errEl.classList.remove('hidden');
+        btn.disabled=false; txt.textContent='Submit Application';
+      }
+    } catch {
+      errEl.textContent='Network error. Please check your connection and try again.';
+      errEl.classList.remove('hidden');
+      btn.disabled=false; txt.textContent='Submit Application';
+    }
+  }
+</script>
+</body>
+</html>

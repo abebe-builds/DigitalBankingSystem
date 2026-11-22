@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DigitalBank ETB — Dashboard" />
+  <title>DigitalBank ETB — Dashboard</title>
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/pages.css" />
+</head>
+<body>
+
+  <!-- ── Hamburger (mobile) ───────────────────────────────────── -->
+  <button
+    id="hamburger"
+    class="hamburger"
+    aria-label="Open navigation menu"
+    aria-expanded="false"
+    aria-controls="sidebar"
+  >☰</button>
+
+  <!-- ── Sidebar Overlay (mobile) ────────────────────────────── -->
+  <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════════════════════ -->
+  <aside id="sidebar" class="sidebar" role="navigation" aria-label="Main navigation">
+
+    <!-- Brand -->
+    <div class="sidebar__brand">
+      <img
+        src="/assets/logo.svg"
+        alt="DigitalBank ETB logo"
+        class="sidebar__brand-logo"
+        width="36"
+        height="36"
+      />
+      <div>
+        <div class="sidebar__brand-name">DigitalBank ETB</div>
+        <div class="sidebar__brand-tagline">Core Banking System</div>
+      </div>
+    </div>
+
+    <!-- Role badge — filled by router.js -->
+    <span id="role-badge" class="sidebar__role-badge" aria-label="Your role"></span>
+
+    <!-- Nav items — filled by router.js based on role -->
+    <ul id="sidebar-nav" class="sidebar__nav" aria-label="Navigation items"></ul>
+
+    <!-- Sidebar footer -->
+    <div class="sidebar__footer">
+      <button
+        type="button"
+        id="sidebar-logout-btn"
+        class="btn btn--danger btn--full btn--sm"
+        aria-label="Sign out"
+      >
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOP BAR
+  ═══════════════════════════════════════════════════════════════ -->
+  <header id="topbar" class="topbar" role="banner">
+    <div class="topbar__left">
+      <h1 id="topbar-title" class="topbar__title">Dashboard</h1>
+    </div>
+    <div class="topbar__right">
+      <div class="topbar__user-info" aria-label="Signed-in user">
+        <span id="topbar-user-name" class="topbar__user-name"></span>
+        <span id="topbar-role" class="topbar__role"></span>
+      </div>
+      <div
+        id="topbar-avatar"
+        class="topbar__avatar"
+        aria-hidden="true"
+        title="User initials"
+      ></div>
+      <button
+        type="button"
+        id="topbar-logout-btn"
+        class="topbar__btn-logout"
+        aria-label="Sign out"
+      >Sign Out</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CONTENT AREA
+  ═══════════════════════════════════════════════════════════════ -->
+  <main id="content-area" class="content-area" role="main">
+    <div class="content-inner">
+      <!-- Dynamic view content injected here by router.js -->
+      <div id="view-container" aria-live="polite" aria-atomic="false">
+        <!-- Loading skeleton shown on first paint -->
+        <div class="stat-grid">
+          <div class="card skeleton skeleton--card" style="height:100px;" aria-hidden="true"></div>
+          <div class="card skeleton skeleton--card" style="height:100px;" aria-hidden="true"></div>
+          <div class="card skeleton skeleton--card" style="height:100px;" aria-hidden="true"></div>
+          <div class="card skeleton skeleton--card" style="height:100px;" aria-hidden="true"></div>
+        </div>
+        <div class="card" aria-hidden="true">
+          <div class="skeleton skeleton--text" style="width:40%;"></div>
+          <div class="skeleton skeleton--text" style="width:70%;"></div>
+          <div class="skeleton skeleton--text" style="width:55%;"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MODAL ROOT — modals injected here by JS
+  ═══════════════════════════════════════════════════════════════ -->
+  <div id="modal-root" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOAST CONTAINER
+  ═══════════════════════════════════════════════════════════════ -->
+  <div
+    id="toast-container"
+    class="toast-container"
+    role="region"
+    aria-label="Notifications"
+    aria-live="polite"
+    aria-atomic="false"
+  ></div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BOTTOM NAV (mobile)
+  ═══════════════════════════════════════════════════════════════ -->
+  <nav id="bottom-nav" class="bottom-nav" aria-label="Mobile quick navigation">
+    <!-- Items injected by router.js based on role -->
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SCRIPTS — ES modules, no bundler
+  ═══════════════════════════════════════════════════════════════ -->
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/router.js"></script>
+</body>
+</html>

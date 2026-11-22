@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DigitalBank ETB — Secure Sign In</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;
+      font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+      background:#f0f2f5;
+      display:flex;flex-direction:column;
+      color:#1a1a2e;
+    }
+
+    /* Top security bar */
+    .security-bar{
+      background:#0f2340;
+      color:rgba(255,255,255,.7);
+      font-size:12px;
+      text-align:center;
+      padding:7px 24px;
+      letter-spacing:.3px;
+    }
+    .security-bar span{color:#f0a500;font-weight:600}
+
+    /* Header */
+    .header{
+      background:#1a3c5e;
+      padding:0 40px;
+      height:68px;
+      display:flex;align-items:center;justify-content:space-between;
+      box-shadow:0 2px 12px rgba(0,0,0,.25);
+    }
+    .header__logo{
+      display:flex;align-items:center;gap:12px;
+      color:#fff;text-decoration:none;
+    }
+    .header__logo-icon{
+      width:42px;height:42px;background:#f0a500;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;font-size:22px;
+    }
+    .header__logo-name{font-size:20px;font-weight:800;letter-spacing:-.3px}
+    .header__logo-sub{font-size:11px;opacity:.7;display:block;font-weight:400}
+    .header__nav{display:flex;gap:20px}
+    .header__nav a{color:rgba(255,255,255,.75);font-size:13px;text-decoration:none;transition:color .2s}
+    .header__nav a:hover{color:#fff}
+
+    /* Main */
+    .main{
+      flex:1;
+      display:flex;align-items:flex-start;justify-content:center;
+      padding:48px 24px 64px;
+      gap:32px;
+    }
+
+    /* Login card */
+    .login-card{
+      background:#fff;border-radius:16px;
+      box-shadow:0 4px 32px rgba(0,0,0,.10);
+      padding:40px 36px;
+      width:100%;max-width:420px;
+      flex-shrink:0;
+    }
+    .login-card__icon{
+      width:56px;height:56px;background:#1a3c5e;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:26px;margin-bottom:20px;
+    }
+    .login-card__title{font-size:24px;font-weight:800;color:#1a3c5e;margin-bottom:6px}
+    .login-card__sub{font-size:14px;color:#6c757d;margin-bottom:28px;line-height:1.6}
+
+    .form-group{margin-bottom:18px}
+    .form-group label{display:block;font-size:13px;font-weight:600;color:#1a3c5e;margin-bottom:6px}
+    .form-control{
+      width:100%;padding:12px 14px;border:2px solid #dee2e6;
+      border-radius:9px;font-size:14px;font-family:inherit;
+      transition:border-color .15s,box-shadow .15s;
+      background:#fff;color:#1a1a2e;
+    }
+    .form-control:focus{outline:none;border-color:#1a3c5e;box-shadow:0 0 0 3px rgba(26,60,94,.1)}
+    .pw-wrap{position:relative}
+    .pw-wrap .form-control{padding-right:48px}
+    .pw-eye{
+      position:absolute;right:12px;top:50%;transform:translateY(-50%);
+      background:none;border:none;cursor:pointer;font-size:18px;
+      color:#6c757d;padding:4px;
+    }
+
+    .btn-signin{
+      width:100%;padding:14px;
+      background:linear-gradient(135deg,#1a3c5e,#2d6a9f);
+      color:#fff;border:none;border-radius:9px;
+      font-size:15px;font-weight:700;cursor:pointer;
+      transition:opacity .2s,transform .15s;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      margin-top:4px;
+      box-shadow:0 4px 12px rgba(26,60,94,.3);
+    }
+    .btn-signin:hover{opacity:.92;transform:translateY(-1px)}
+    .btn-signin:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    .alert-error{
+      background:#fdf2f2;color:#c0392b;
+      border:1px solid #f5c6cb;border-radius:9px;
+      padding:12px 14px;font-size:13px;margin-bottom:18px;
+      display:flex;align-items:flex-start;gap:8px;
+    }
+
+    .login-links{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-top:16px;font-size:12px;color:#6c757d;
+    }
+    .login-links a{color:#2d6a9f;font-weight:600;text-decoration:none}
+    .login-links a:hover{text-decoration:underline}
+
+    /* Security notice */
+    .security-notice{
+      background:#f8f9fa;border:1px solid #e9ecef;border-radius:10px;
+      padding:14px 16px;margin-top:20px;font-size:12px;color:#6c757d;
+      line-height:1.7;
+    }
+    .security-notice strong{color:#1a3c5e;display:block;margin-bottom:4px;font-size:12px}
+
+    /* Session notice */
+    .session-notice{
+      text-align:center;font-size:11px;color:#adb5bd;
+      margin-top:16px;
+    }
+
+    /* Demo panel (collapsible) */
+    .demo-panel{
+      width:100%;max-width:440px;
+    }
+    .demo-toggle{
+      width:100%;background:#fff;border:2px solid #dee2e6;border-radius:12px;
+      padding:14px 18px;cursor:pointer;
+      display:flex;align-items:center;justify-content:space-between;
+      font-size:14px;font-weight:600;color:#1a3c5e;
+      transition:all .2s;margin-bottom:0;
+    }
+    .demo-toggle:hover{border-color:#1a3c5e;background:#f8f9fa}
+    .demo-toggle__left{display:flex;align-items:center;gap:10px}
+    .demo-toggle__badge{
+      background:#fff3cd;color:#856404;border:1px solid #ffc107;
+      border-radius:100px;padding:2px 9px;font-size:11px;font-weight:700;
+    }
+    .demo-toggle__chevron{font-size:14px;transition:transform .25s;color:#6c757d}
+    .demo-toggle.open .demo-toggle__chevron{transform:rotate(180deg)}
+
+    .demo-body{
+      display:none;
+      background:#fff;border:2px solid #dee2e6;border-top:none;
+      border-radius:0 0 12px 12px;padding:20px 18px;
+      margin-top:-2px;
+    }
+    .demo-body.open{display:block}
+
+    .demo-hint{
+      font-size:12px;color:#6c757d;margin-bottom:14px;line-height:1.6;
+    }
+    .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .role-btn{
+      background:#f8f9fa;border:1.5px solid #e9ecef;border-radius:10px;
+      padding:11px 12px;cursor:pointer;
+      display:flex;align-items:center;gap:10px;
+      text-align:left;width:100%;transition:all .15s;
+    }
+    .role-btn:hover{border-color:#1a3c5e;background:#fff;box-shadow:0 2px 8px rgba(26,60,94,.1)}
+    .role-btn.selected{border-color:#f0a500;background:#fffbf0}
+    .role-btn__icon{
+      width:34px;height:34px;border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:17px;flex-shrink:0;
+    }
+    .role-btn__name{font-size:12px;font-weight:700;color:#1a3c5e;line-height:1.3}
+    .role-btn__role{font-size:10px;color:#6c757d;margin-top:1px}
+    .role-btn--wide{grid-column:span 2}
+
+    /* Icon colors */
+    .ic-c{background:#e3f2fd} .ic-e{background:#e8f5e9} .ic-k{background:#f3e5f5}
+    .ic-m{background:#fff3e0} .ic-t{background:#e0f7fa} .ic-s{background:#fce4ec}
+    .ic-a{background:#f1f8e9} .ic-o{background:#e8eaf6} .ic-ad{background:#fbe9e7}
+
+    /* Footer */
+    .footer{
+      background:#1a3c5e;color:rgba(255,255,255,.6);
+      text-align:center;padding:20px 24px;font-size:12px;line-height:1.8;
+    }
+    .footer a{color:rgba(255,255,255,.6);text-decoration:none}
+    .footer a:hover{color:#f0a500}
+
+    .spinner{
+      width:16px;height:16px;
+      border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+      border-radius:50%;animation:spin .7s linear infinite;display:inline-block;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media(max-width:860px){
+      .main{flex-direction:column;align-items:center}
+      .demo-panel{order:-1}
+    }
+    @media(max-width:480px){
+      .login-card{padding:28px 20px}
+      .role-grid{grid-template-columns:1fr}
+      .role-btn--wide{grid-column:span 1}
+      .header__nav{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Security bar -->
+<div class="security-bar">
+  🔒 <span>Secure Connection</span> &nbsp;·&nbsp;
+  This is a protected banking system. Unauthorized access is prohibited.
+  &nbsp;·&nbsp; <span>Session expires after 8 hours of inactivity</span>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <a href="/" class="header__logo">
+    <div class="header__logo-icon">🏦</div>
+    <div>
+      <span class="header__logo-name">DigitalBank ETB</span>
+      <span class="header__logo-sub">Core Banking System</span>
+    </div>
+  </a>
+  <nav class="header__nav">
+    <a href="/">Home</a>
+    <a href="/#services">Services</a>
+    <a href="/#faq">Help</a>
+    <a href="/#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Login form -->
+  <div class="login-card">
+    <div class="login-card__icon">🔐</div>
+    <div class="login-card__title">Secure Sign In</div>
+    <div class="login-card__sub">Enter your credentials to access your DigitalBank ETB account.</div>
+
+    <div id="form-error" class="alert-error" style="display:none">
+      <span>⚠️</span><span id="err-msg"></span>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" class="form-control"
+          placeholder="your@email.com" autocomplete="email" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password" class="form-control"
+            placeholder="Enter your password" autocomplete="current-password" required />
+          <button type="button" class="pw-eye" id="pw-toggle" aria-label="Show password">👁</button>
+        </div>
+      </div>
+      <button type="submit" id="sign-in-btn" class="btn-signin">
+        <span id="btn-lbl">Sign In Securely →</span>
+      </button>
+    </form>
+
+    <div class="login-links">
+      <a href="/#contact">Forgot password?</a>
+      <a href="/">← Back to Home</a>
+    </div>
+
+    <div class="security-notice">
+      <strong>🛡️ Security Reminder</strong>
+      DigitalBank ETB will never ask for your password or OTP by phone or email.
+      Always verify you are on the correct website before entering your credentials.
+    </div>
+
+    <div class="session-notice">
+      Your session will automatically expire after 8 hours of inactivity.
+    </div>
+  </div>
+
+  <!-- Demo panel (collapsible) -->
+  <div class="demo-panel">
+    <button class="demo-toggle" id="demo-toggle" onclick="toggleDemo()">
+      <div class="demo-toggle__left">
+        <span>🎓</span>
+        <span>Demo Accounts</span>
+        <span class="demo-toggle__badge">DEMO</span>
+      </div>
+      <span class="demo-toggle__chevron">▾</span>
+    </button>
+    <div class="demo-body" id="demo-body">
+      <p class="demo-hint">
+        Click a role to auto-fill credentials. All accounts use the same password (hidden for security).
+      </p>
+      <div class="role-grid">
+
+        <button class="role-btn" onclick="selectRole(this,'customer@dev.local','Customer')">
+          <div class="role-btn__icon ic-c">👤</div>
+          <div><div class="role-btn__name">Customer</div><div class="role-btn__role">Personal Banking</div></div>
+        </button>
+
+        <button class="role-btn" onclick="selectRole(this,'account-opening@dev.local','Account Opening Employee')">
+          <div class="role-btn__icon ic-e">📋</div>
+          <div><div class="role-btn__name">Acct. Opening</div><div class="role-btn__role">Reviews Applications</div></div>
+        </button>
+
+        <button class="role-btn" onclick="selectRole(this,'kyc-officer@dev.local','KYC / Compliance Officer')">
+          <div class="role-btn__icon ic-k">🔍</div>
+          <div><div class="role-btn__name">KYC Officer</div><div class="role-btn__role">Compliance & Verify</div></div>
+        </button>
+
+        <button class="role-btn" onclick="selectRole(this,'manager@dev.local','Manager / Authorized Approver')">
+          <div class="role-btn__icon ic-m">✅</div>
+          <div><div class="role-btn__name">Manager</div><div class="role-btn__role">Approves Applications</div></div>
+        </button>
+
+        <button class="role-btn" onclick="selectRole(this,'cashier@dev.local','Cashier / Teller')">
+          <div class="role-btn__icon ic-t">💵</div>
+          <div><div class="role-btn__name">Cashier / Teller</div><div class="role-btn__role">Deposits & Withdrawals</div></div>
+        </button>
+
+        <button class="role-btn" onclick="selectRole(this,'support@dev.local','Customer Support')">
+          <div class="role-btn__icon ic-s">🎧</div>
+          <div><div class="role-btn__name">Support</div><div class="role-btn__role">Customer Assistance</div></div>
+        </button>
+
+        <button class="role-btn" onclick="selectRole(this,'auditor@dev.local','Auditor')">
+          <div class="role-btn__icon ic-a">📊</div>
+          <div><div class="role-btn__name">Auditor</div><div class="role-btn__role">Read-Only Audit</div></div>
+        </button>
+
+        <button class="role-btn" onclick="selectRole(this,'operations@dev.local','Operations / Finance')">
+          <div class="role-btn__icon ic-o">⚙️</div>
+          <div><div class="role-btn__name">Operations</div><div class="role-btn__role">Reconciliation & Ledger</div></div>
+        </button>
+
+        <button class="role-btn role-btn--wide" onclick="selectRole(this,'sysadmin@dev.local','System Administrator')">
+          <div class="role-btn__icon ic-ad">🛡️</div>
+          <div><div class="role-btn__name">System Administrator</div><div class="role-btn__role">User & System Management</div></div>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div>
+    <strong style="color:rgba(255,255,255,.85)">DigitalBank ETB</strong> &nbsp;·&nbsp;
+    <a href="/#faq">Help Center</a> &nbsp;·&nbsp;
+    <a href="#">Privacy Policy</a> &nbsp;·&nbsp;
+    <a href="#">Terms of Use</a> &nbsp;·&nbsp;
+    <a href="#">Security</a>
+  </div>
+  <div style="margin-top:8px">
+    © 2026 DigitalBank ETB &nbsp;·&nbsp; 
+    ⚠️ Educational Simulation — Not a licensed financial institution
+  </div>
+</footer>
+
+<div id="toast-container" style="position:fixed;bottom:24px;right:24px;z-index:9999"></div>
+
+<script>
+  // ── Demo panel toggle ────────────────────────────────────────
+  function toggleDemo() {
+    const btn  = document.getElementById('demo-toggle');
+    const body = document.getElementById('demo-body');
+    btn.classList.toggle('open');
+    body.classList.toggle('open');
+  }
+
+  // ── Select role (fill credentials silently) ──────────────────
+  function selectRole(el, email, roleName) {
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('email').value    = email;
+    document.getElementById('password').value = 'DevPass123!';
+    document.getElementById('form-error').style.display = 'none';
+    // Focus sign-in button
+    document.getElementById('sign-in-btn').focus();
+  }
+
+  // ── Password toggle ──────────────────────────────────────────
+  document.getElementById('pw-toggle').addEventListener('click', function () {
+    const inp = document.getElementById('password');
+    const show = inp.type === 'password';
+    inp.type  = show ? 'text' : 'password';
+    this.textContent = show ? '🙈' : '👁';
+  });
+
+  // ── Login submit ─────────────────────────────────────────────
+  document.getElementById('login-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errBox   = document.getElementById('form-error');
+    const errMsg   = document.getElementById('err-msg');
+    const btn      = document.getElementById('sign-in-btn');
+    const lbl      = document.getElementById('btn-lbl');
+
+    errBox.style.display = 'none';
+
+    if (!email || !password) {
+      errMsg.textContent = 'Please enter your email address and password.';
+      errBox.style.display = 'flex';
+      return;
+    }
+
+    btn.disabled = true;
+    lbl.innerHTML = '<span class="spinner"></span> Verifying credentials…';
+
+    try {
+      const res  = await fetch('/api/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const json = await res.json();
+
+      if (res.ok) {
+        lbl.innerHTML = '✔ Authenticated — redirecting…';
+        if (json.user?.must_change_password) {
+          setTimeout(() => window.location.replace('/change-password.html'), 600);
+        } else {
+          setTimeout(() => window.location.replace('/dashboard.html'), 600);
+        }
+      } else {
+        let msg = json.error || 'Invalid email or password. Please try again.';
+        if (res.status === 403) msg = 'Your account is locked or suspended. Contact your administrator.';
+        errMsg.textContent = msg;
+        errBox.style.display = 'flex';
+        btn.disabled = false;
+        lbl.textContent = 'Sign In Securely →';
+      }
+    } catch {
+      errMsg.textContent = 'Connection failed. Please check the server is running.';
+      errBox.style.display = 'flex';
+      btn.disabled = false;
+      lbl.textContent = 'Sign In Securely →';
+    }
+  });
+</script>
+</body>
+</html>

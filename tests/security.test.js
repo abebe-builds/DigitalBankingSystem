@@ -23,7 +23,7 @@ after(async () => {
   if (secUserId) {
     await pool.query('DELETE FROM users WHERE id = ?', [secUserId]);
   }
-  await pool.end();
+  // Do NOT call pool.end() here — pool is shared. See tests/teardown.test.js.
 });
 
 describe('Password storage security', () => {

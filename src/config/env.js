@@ -50,6 +50,10 @@ export const config = {
     dir: process.env.UPLOAD_DIR || 'uploads',
     maxFileSizeMb: intEnv('MAX_FILE_SIZE_MB', 5),
   },
+  transactionLimits: {
+    maxDailyWithdrawalEtb: intEnv('MAX_DAILY_WITHDRAWAL_ETB', 50000),
+    maxSingleTransactionEtb: intEnv('MAX_SINGLE_TRANSACTION_ETB', 20000),
+  },
 };
 
 // Production guard: SESSION_SECRET must be set and must not be the default placeholder.

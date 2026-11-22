@@ -10,6 +10,7 @@ import {
   submitApplication,
   reviewApplication,
   requestCorrection,
+  verifyKyc,
   approveApplication,
   rejectApplication,
   createAccountFromApplication,
@@ -133,6 +134,25 @@ applicationsRouter.post('/:id/request-correction', requirePermission('applicatio
       parseInt(req.params.id, 10),
       req.user.id,
       req.body.correction_instructions,
+    );
+    return res.status(200).json({ status: 'ok', application: app });
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ status: 'error', error: err.message });
+    next(err);
+  }
+});
+
+/**
+ * POST /api/applications/:id/verify-kyc
+ * Mark application as KYC verified. Requires kyc.verify permission.
+ * KYC officer verifies identity, compliance, and risk assessment.
+ */
+applicationsRouter.post('/:id/verify-kyc', requirePermission('kyc.verify'), async (req, res, next) => {
+  try {
+    const app = await verifyKyc(
+      parseInt(req.params.id, 10),
+      req.user.id,
+      req.body.notes || null,
     );
     return res.status(200).json({ status: 'ok', application: app });
   } catch (err) {
